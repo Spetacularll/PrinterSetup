@@ -1,6 +1,18 @@
-<html>
-    <body>
-        <h1>hello word!!!</h1>
-        <p>this is a html page</p>
-    </body>
-</html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Inbound Product</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+
+<body>
+
+<div class="container">
+    <a href="http://localhost:8080/api/inbound/product">入库</a>
+    <a href="http://localhost:8080/api/outbound/barcode">出库</a>
+    <a href="http://localhost:8080/api/products/barcode">查询</a>
+    <a href="http://localhost:8080/api/products/inbound">查看仓库产品</a>
+
+</div>
+</body>

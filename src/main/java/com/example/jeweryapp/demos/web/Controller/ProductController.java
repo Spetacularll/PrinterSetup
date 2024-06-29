@@ -1,48 +1,52 @@
-package com.jewery.demo1.demos.web.Controller;
+package com.example.jeweryapp.demos.web.Controller;
 
-import com.jewery.demo1.demos.web.Entity.Product;
-import com.jewery.demo1.demos.web.Service.ProductService;
+import com.example.jeweryapp.demos.web.Entity.Product;
+import com.example.jeweryapp.demos.web.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/products")
+@Controller
+@RequestMapping("/api/products")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
-    @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        Product savedProduct = productService.saveProduct(product);
-        return ResponseEntity.ok(savedProduct);
+    @GetMapping("/barcode")
+    public String getProductByBarcode(@RequestParam(value = "barcode", required = false) String barcode, Model model) {
+        if (barcode != null) {
+            try {
+                Product product = productService.getProductByBarcode(barcode);
+                model.addAttribute("product", product);
+            } catch (IllegalArgumentException e) {
+                model.addAttribute("error", e.getMessage());
+            }
+        }
+        return "product-edit";
+    }
+    @GetMapping("/inbound")
+    public String viewProductsInStock(Model model) {
+        List<Product> productsInStock = productService.getProductsInStock();
+        model.addAttribute("products", productsInStock);
+        return "products-in-stock";
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        Product updatedProduct = productService.updateProduct(id, product);
-        return ResponseEntity.ok(updatedProduct);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        return productService.getProductById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-        return ResponseEntity.ok(products);
+    @PostMapping("/barcode")
+    public String updateProductByBarcode(@RequestParam String barcode,
+                                         @ModelAttribute Product updatedProduct,
+                                         Model model) {
+        try {
+            Product product = productService.updateProductByBarcode(barcode, updatedProduct);
+            model.addAttribute("product", product);
+            model.addAttribute("success", "Product updated successfully");
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+        }
+        return "product-edit";
     }
 }

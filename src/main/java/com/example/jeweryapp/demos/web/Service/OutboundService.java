@@ -1,4 +1,4 @@
-package com.jewery.demo1.demos.web.Service;
+package com.example.jeweryapp.demos.web.Service;
 
 import org.springframework.stereotype.Service;
 

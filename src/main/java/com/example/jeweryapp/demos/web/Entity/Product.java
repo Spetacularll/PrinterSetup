@@ -1,6 +1,6 @@
-package com.jewery.demo1.demos.web.Entity;
+package com.example.jeweryapp.demos.web.Entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -30,6 +30,19 @@ public class Product {
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Column(nullable = false)
+    private int stock;
+    @Column(nullable = false)
+    private boolean isDeleted=false;
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
 
     public Long getProductId() {
         return productId;

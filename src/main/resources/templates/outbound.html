@@ -1,10 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>$Title$</title>
+  <title>Outbound Product</title>
+  <link rel="stylesheet" th:href="@{/css/styles.css}" />
 </head>
 <body>
-$END$
+<div class="container">
+  <h1>Outbound Product</h1>
+  <form th:action="@{/api/outbound/barcode}" method="get">
+    <div>
+      <label for="barcode">Barcode:</label>
+      <input type="text" id="barcode" name="barcode" required />
+    </div>
+    <div>
+      <button type="submit">Search</button>
+    </div>
+  </form>
+
+  <div th:if="${error != null}">
+    <p th:text="${error}" style="color: red;"></p>
+  </div>
+
+  <div th:if="${product != null}">
+    <h2>Product Details</h2>
+    <p>Name: <span th:text="${product.productName}"></span></p>
+    <p>Barcode: <span th:text="${product.barcode}"></span></p>
+    <p>Category: <span th:text="${product.category}"></span></p>
+    <p>Price: <span th:text="${product.price}"></span></p>
+    <p>Description: <span th:text="${product.description}"></span></p>
+    <form th:action="@{/api/outbound}" method="post">
+      <input type="hidden" name="productId" th:value="${product.productId}" />
+      <div>
+        <label for="destination">Destination:</label>
+        <input type="text" id="destination" name="destination" required />
+      </div>
+      <div>
+        <button type="submit">Outbound</button>
+      </div>
+    </form>
+  </div>
+</div>
 </body>
 </html>

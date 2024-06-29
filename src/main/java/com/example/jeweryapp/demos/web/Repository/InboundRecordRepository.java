@@ -1,7 +1,9 @@
-package com.jewery.demo1.demos.web.Repository;
+package com.example.jeweryapp.demos.web.Repository;
 
-import com.jewery.demo1.demos.web.Entity.InboundRecord;
+import com.example.jeweryapp.demos.web.Entity.InboundRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface InboundRecordRepository extends
         JpaRepository<InboundRecord,Long> {

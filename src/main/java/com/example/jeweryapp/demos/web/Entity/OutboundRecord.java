@@ -1,9 +1,11 @@
-package com.jewery.demo1.demos.web.Entity;
+package com.example.jeweryapp.demos.web.Entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
