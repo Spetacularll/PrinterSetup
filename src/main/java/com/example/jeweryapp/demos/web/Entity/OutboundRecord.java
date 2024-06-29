@@ -3,6 +3,7 @@ package com.example.jeweryapp.demos.web.Entity;
 import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -12,6 +13,8 @@ import java.time.LocalDateTime;
 @Table(name = "OutboundRecords")
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
+
 public class OutboundRecord {
 
     public Long getOutboundId() {

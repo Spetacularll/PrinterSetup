@@ -1,8 +1,11 @@
 package com.example.jeweryapp.demos.web.Entity;
 
 import javax.persistence.*;
+
+import com.example.jeweryapp.demos.web.Component.AuditListener;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 
@@ -10,6 +13,7 @@ import java.math.BigDecimal;
 @Table(name = "Products")
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners({AuditingEntityListener.class, AuditListener.class})
 public class Product {
 
     @Id
