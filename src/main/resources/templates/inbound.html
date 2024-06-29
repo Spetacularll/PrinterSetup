@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Inbound Product</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body>
+<div class="container">
+    <h1>Inbound Product</h1>
+    <form th:action="@{/api/inbound/product}" method="post">
+        <div>
+            <label for="productName">Product Name:</label>
+            <input type="text" id="productName" name="productName" required />
+        </div>
+        <div>
+            <label for="barcode">Barcode:</label>
+            <input type="text" id="barcode" name="barcode" required />
+        </div>
+        <div>
+            <label for="category">Category:</label>
+            <input type="text" id="category" name="category" />
+        </div>
+        <div>
+            <label for="price">Price:</label>
+            <input type="number" step="0.01" id="price" name="price" required />
+        </div>
+        <div>
+            <label for="description">Description:</label>
+            <textarea id="description" name="description"></textarea>
+        </div>
+        <div>
+            <label for="supplierId">Supplier ID:</label>
+            <input type="number" id="supplierId" name="supplierId" required />
+        </div>
+        <div>
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>
