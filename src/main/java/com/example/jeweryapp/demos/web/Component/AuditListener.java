@@ -1,6 +1,7 @@
 package com.example.jeweryapp.demos.web.Component;
 
 import com.example.jeweryapp.demos.web.Entity.AuditLog;
+import com.example.jeweryapp.demos.web.Entity.Product;
 import com.example.jeweryapp.demos.web.Repository.AuditLogRepository;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;

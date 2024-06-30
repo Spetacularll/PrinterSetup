@@ -23,6 +23,14 @@ public class Product {
     @Column(nullable = false, length = 100)
     private String productName;
 
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
+
     @Column(nullable = false, unique = true, length = 50)
     private String barcode;
 
@@ -48,7 +56,7 @@ public class Product {
         this.stock = stock;
     }
 
-    public Long getProductId() {
+    public Long getId() {
         return productId;
     }
 

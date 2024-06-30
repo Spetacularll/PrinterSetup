@@ -13,10 +13,13 @@
     <a href="http://localhost:8080/api/outbound/barcode">出库</a>
     <a href="http://localhost:8080/api/products/barcode">查询</a>
     <a href="http://localhost:8080/api/products/inbound">查看仓库产品</a>
+    <a href="http://localhost:8080/audit-logs">查看日志</a>
+    <a href="http://localhost:8080/api/outbound/outbound-records">查看出库记录</a>
     <form th:action="@{/logout}" method="post">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <button type="submit">Logout</button>
     </form>
 
 </div>
+
 </body>

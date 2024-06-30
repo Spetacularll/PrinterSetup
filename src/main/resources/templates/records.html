@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Product Records</title>
+</head>
+<body>
+<h1>Product Records</h1>
+
+<h2>Product Details</h2>
+<p>Product Name: <span th:text="${product.productName}"></span></p>
+<p>Barcode: <span th:text="${product.barcode}"></span></p>
+<p>Category: <span th:text="${product.category}"></span></p>
+<p>Price: <span th:text="${product.price}"></span></p>
+<p>Description: <span th:text="${product.description}"></span></p>
+<p>Stock: <span th:text="${product.stock}"></span></p>
+
+<h2>Inbound Records</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Inbound ID</th>
+        <th>Supplier</th>
+        <th>Quantity</th>
+        <th>Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="record : ${inboundRecords}">
+        <td th:text="${record.Id}"></td>
+        <td th:text="${record.supplier.supplierName}"></td>
+        <td th:text="${record.quantity}"></td>
+        <td th:text="${record.inboundDate}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>Outbound Records</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Outbound ID</th>
+        <th>Quantity</th>
+        <th>Date</th>
+        <th>Destination</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="record : ${outboundRecords}">
+        <td th:text="${record.Id}"></td>
+        <td th:text="${record.quantity}"></td>
+        <td th:text="${record.outboundDate}"></td>
+        <td th:text="${record.destination}"></td>
+    </tr>
+    </tbody>
+</table>
+<a href="http://localhost:8080/">返回主页</a>
+
+</body>
+</html>

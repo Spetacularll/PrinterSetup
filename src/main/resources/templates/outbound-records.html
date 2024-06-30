@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Outbound Records</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<h1>Outbound Records</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Product Name</th>
+        <th>Quantity</th>
+        <th>Outbound Date</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="record : ${outboundRecords}">
+        <td th:text="${record.Id}"></td>
+        <td th:text="${record.product.productName}"></td>
+        <td th:text="${record.quantity}"></td>
+        <td th:text="${record.outboundDate}"></td>
+    </tr>
+    </tbody>
+</table>
+<a href="http://localhost:8080/">返回主页</a>
+
+</body>
+</html>

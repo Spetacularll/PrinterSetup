@@ -15,8 +15,7 @@ public class AuditLogService {
     private AuditLogRepository auditLogRepository;
 
     public List<AuditLog> getAuditLogs(LocalDateTime start, LocalDateTime end) {
-        return auditLogRepository.findAllByCreatedDateBetween(start, end);
+        return auditLogRepository.findAllByTimestampBetween(start, end);
     }
-
-
 }
+

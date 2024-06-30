@@ -138,8 +138,8 @@ public class ProductService {
     }
 
     public List<Product> getProductsInStock() {
-        Optional<Product> products = productRepository.findByStock(1);
-        List<Product> list = products.map(Collections::singletonList).orElse(Collections.emptyList());
-    return list;
+
+        List<Product> products = productRepository.findByStock(1);
+    return products;
     }
 }

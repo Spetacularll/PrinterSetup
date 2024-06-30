@@ -30,7 +30,7 @@
     <p>Price: <span th:text="${product.price}"></span></p>
     <p>Description: <span th:text="${product.description}"></span></p>
     <form th:action="@{/api/outbound}" method="post">
-      <input type="hidden" name="productId" th:value="${product.productId}" />
+      <input type="hidden" name="productId" th:value="${product.Id}" />
       <div>
         <label for="destination">Destination:</label>
         <input type="text" id="destination" name="destination" required />
@@ -40,6 +40,12 @@
       </div>
     </form>
   </div>
+  <form th:action="@{/logout}" method="post">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    <button type="submit">Logout</button>
+  </form>
 </div>
+<a href="http://localhost:8080/">返回主页</a>
+
 </body>
 </html>

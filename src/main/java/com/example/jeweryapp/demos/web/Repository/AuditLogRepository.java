@@ -7,9 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 @Repository
 public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
-
-    List<AuditLog> findAllByCreatedDateBetween(LocalDateTime start, LocalDateTime end);
-
+    List<AuditLog> findAllByTimestampBetween(LocalDateTime start, LocalDateTime end);
 }

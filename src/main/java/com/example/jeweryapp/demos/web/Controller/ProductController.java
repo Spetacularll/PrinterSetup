@@ -36,6 +36,8 @@ public class ProductController {
         return "products-in-stock";
     }
 
+
+
     @PostMapping("/barcode")
     public String updateProductByBarcode(@RequestParam String barcode,
                                          @ModelAttribute Product updatedProduct,

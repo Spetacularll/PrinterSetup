@@ -1,6 +1,8 @@
 package com.example.jeweryapp.demos.web.Entity;
 
 import javax.persistence.*;
+
+import com.example.jeweryapp.demos.web.Component.AuditListener;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -11,10 +13,10 @@ import java.time.LocalDateTime;
 @Table(name = "InboundRecords")
 @NoArgsConstructor
 @AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
+@EntityListeners({AuditingEntityListener.class, AuditListener.class})
 
 public class InboundRecord {
-    public Long getInboundId() {
+    public Long getId() {
         return inboundId;
     }
 
