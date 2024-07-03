@@ -47,6 +47,15 @@ public class ProductService {
     public void deleteProductById(Long id) {
         productRepository.deleteById(id);
     }
+    public void deleteProductByBarcode(String barcode) {
+        Product product = productRepository.findByBarcode(barcode)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid barcode: " + barcode));
+        if(product!=null){
+            product.setDeleted(true);
+            productRepository.save(product);
+        }
+
+    }
 
     @Transactional
     public InboundRecord addInboundRecord(Long productId, Long supplierId) {

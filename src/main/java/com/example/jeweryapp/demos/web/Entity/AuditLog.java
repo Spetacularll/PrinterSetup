@@ -1,4 +1,5 @@
 package com.example.jeweryapp.demos.web.Entity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -7,6 +8,13 @@ import java.time.LocalDateTime;
 
 @Entity
 public class AuditLog {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(length = 255)
+    private String operationType;
+
     public Long getId() {
         return id;
     }
@@ -63,17 +71,19 @@ public class AuditLog {
         this.timestamp = timestamp;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String operationType;
+    @Column(length = 255)
     private String entityName;
+
     private Long entityId;
+
+    @Column(length = 10000)
     private String oldData;
+
+    @Column(length = 10000)
     private String newData;
 
     @Column(nullable = false, updatable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime timestamp;
 
     public AuditLog() {}
@@ -84,7 +94,8 @@ public class AuditLog {
         this.entityId = entityId;
         this.oldData = oldData;
         this.newData = newData;
+        this.timestamp = LocalDateTime.now();
     }
 
-    // Getters and setters
+    // getters and setters
 }

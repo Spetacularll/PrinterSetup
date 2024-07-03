@@ -3,6 +3,8 @@ package com.example.jeweryapp.demos.web.Entity;
 import javax.persistence.*;
 
 import com.example.jeweryapp.demos.web.Component.AuditListener;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -15,8 +17,7 @@ import java.time.LocalDateTime;
 @Table(name = "OutboundRecords")
 @NoArgsConstructor
 @AllArgsConstructor
-@EntityListeners({AuditingEntityListener.class, AuditListener.class})
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OutboundRecord {
 
     public Long getId() {

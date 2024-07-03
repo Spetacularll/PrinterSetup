@@ -29,6 +29,17 @@ public class ProductController {
         }
         return "product-edit";
     }
+    @PostMapping("/delete")
+    public String deleteProductByBarcode(@RequestParam String barcode, Model model) {
+        try {
+            productService.deleteProductByBarcode(barcode);
+            model.addAttribute("success", "Product marked as deleted successfully");
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+        }
+        return "products-in-stock";
+    }
+
     @GetMapping("/inbound")
     public String viewProductsInStock(Model model) {
         List<Product> productsInStock = productService.getProductsInStock();

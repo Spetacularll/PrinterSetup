@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Products in Stock</title>
   <link rel="stylesheet" th:href="@{/css/styles.css}" />
-
 </head>
 <body>
 <div class="container">
@@ -16,6 +15,7 @@
       <th>Category</th>
       <th>Price</th>
       <th>Description</th>
+      <th>Actions</th>
     </tr>
     </thead>
     <tbody>
@@ -24,15 +24,21 @@
       <td th:text="${product.category}"></td>
       <td th:text="${product.price}"></td>
       <td th:text="${product.description}"></td>
+      <td>
+        <form th:action="@{/api/products/delete}" method="post" th:object="${product}">
+          <input type="hidden" name="barcode" th:value="${product.barcode}" />
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+          <button type="submit">Delete</button>
+        </form>
+      </td>
     </tr>
     </tbody>
-    <form th:action="@{/logout}" method="post">
-      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-      <button type="submit">Logout</button>
-    </form>
   </table>
+  <form th:action="@{/logout}" method="post">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    <button type="submit">Logout</button>
+  </form>
 </div>
 <a href="http://localhost:8080/">返回主页</a>
-
 </body>
 </html>
