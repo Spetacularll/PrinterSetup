@@ -80,24 +80,24 @@ public class ProductService {
         return inboundRecordRepository.save(inboundRecord);
     }
 
+    public Product findProductByBarcode(String barcode){
+        return productRepository.findProductByBarcode(barcode);
+    }
+
     @Transactional
     public InboundRecord addProductAndInboundRecord(Product product, Long supplierId) {
         if (product.getStock() > 0) {
             throw new IllegalStateException("Product is already in stock");
         }
-
         Supplier supplier = supplierRepository.findById(supplierId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid supplier ID: " + supplierId));
-
         product.setStock(1);
         product = productRepository.save(product);
-
         InboundRecord inboundRecord = new InboundRecord();
         inboundRecord.setProduct(product);
         inboundRecord.setSupplier(supplier);
         inboundRecord.setQuantity(1);
         inboundRecord.setInboundDate(LocalDateTime.now());
-
         return inboundRecordRepository.save(inboundRecord);
     }
 

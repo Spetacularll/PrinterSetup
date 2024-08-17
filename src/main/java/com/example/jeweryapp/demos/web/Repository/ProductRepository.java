@@ -17,4 +17,5 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
     @Query("SELECT p FROM Product p WHERE p.stock = :stock AND p.isDeleted = false")
     List<Product> findByStock(@Param("stock")int stock);
 
+    Product findProductByBarcode(String barcode);
 }

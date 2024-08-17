@@ -1,34 +1,39 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <title>Products in Stock</title>
-  <link rel="stylesheet" th:href="@{/css/styles.css}" />
-</head>
 <body>
 <div class="container">
-  <h1>Products in Stock</h1>
+  <h1>库存中的产品</h1>
   <table>
     <thead>
     <tr>
-      <th>Product Name</th>
-      <th>Category</th>
-      <th>Price</th>
-      <th>Description</th>
-      <th>Actions</th>
+      <th>图片</th> <!-- 新增图片列 -->
+      <th>产品名称</th>
+      <th>类别</th>
+      <th>价格</th>
+      <th>描述</th>
+      <th>操作</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="product : ${products}">
+      <td>
+        <img th:if="${product.imageUrl != null}" th:src="@{${product.imageUrl}}" alt="Product Image" style="max-width: 300px; max-height: 200px;" />
+      </td>
       <td th:text="${product.productName}"></td>
       <td th:text="${product.category}"></td>
       <td th:text="${product.price}"></td>
       <td th:text="${product.description}"></td>
       <td>
+        <!-- 删除按钮 -->
         <form th:action="@{/api/products/delete}" method="post" th:object="${product}">
           <input type="hidden" name="barcode" th:value="${product.barcode}" />
           <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-          <button type="submit">Delete</button>
+          <button type="submit">删除</button>
+        </form>
+      </td>
+      <td>
+        <!-- 新增编辑按钮 -->
+        <form th:action="@{/api/products/barcode}" method="get">
+          <input type="hidden" name="barcode" th:value="${product.barcode}" />
+          <button type="submit">编辑</button>
         </form>
       </td>
     </tr>
@@ -36,9 +41,8 @@
   </table>
   <form th:action="@{/logout}" method="post">
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-    <button type="submit">Logout</button>
+    <button type="submit">登出</button>
   </form>
 </div>
 <a href="http://localhost:8080/">返回主页</a>
 </body>
-</html>

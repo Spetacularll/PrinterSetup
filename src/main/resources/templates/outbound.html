@@ -2,19 +2,19 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Outbound Product</title>
+  <title>产品出库</title>
   <link rel="stylesheet" th:href="@{/css/styles.css}" />
 </head>
 <body>
 <div class="container">
-  <h1>Outbound Product</h1>
+  <h1>产品出库</h1>
   <form th:action="@{/api/outbound/barcode}" method="get">
     <div>
-      <label for="barcode">Barcode:</label>
+      <label for="barcode">扫描条形码输入:</label>
       <input type="text" id="barcode" name="barcode" required />
     </div>
     <div>
-      <button type="submit">Search</button>
+      <button type="submit">搜索</button>
     </div>
   </form>
 
@@ -23,26 +23,26 @@
   </div>
 
   <div th:if="${product != null}">
-    <h2>Product Details</h2>
-    <p>Name: <span th:text="${product.productName}"></span></p>
-    <p>Barcode: <span th:text="${product.barcode}"></span></p>
-    <p>Category: <span th:text="${product.category}"></span></p>
-    <p>Price: <span th:text="${product.price}"></span></p>
-    <p>Description: <span th:text="${product.description}"></span></p>
+    <h2>产品详情</h2>
+    <p>名称: <span th:text="${product.productName}"></span></p>
+    <p>条形码: <span th:text="${product.barcode}"></span></p>
+    <p>类别: <span th:text="${product.category}"></span></p>
+    <p>价格: <span th:text="${product.price}"></span></p>
+    <p>描述: <span th:text="${product.description}"></span></p>
     <form th:action="@{/api/outbound}" method="post">
       <input type="hidden" name="productId" th:value="${product.Id}" />
       <div>
-        <label for="destination">Destination:</label>
+        <label for="destination">去向:</label>
         <input type="text" id="destination" name="destination" required />
       </div>
       <div>
-        <button type="submit">Outbound</button>
+        <button type="submit">出库</button>
       </div>
     </form>
   </div>
   <form th:action="@{/logout}" method="post">
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-    <button type="submit">Logout</button>
+    <button type="submit">登出</button>
   </form>
 </div>
 <a href="http://localhost:8080/">返回主页</a>

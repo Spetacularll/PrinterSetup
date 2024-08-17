@@ -14,4 +14,9 @@ public class HomeController {
     public String login() {
         return "login"; // login.html in src/main/resources/templates
     }
+    @GetMapping("/audit-logs")
+    public String viewAuditLogsPage() {
+        return "audit-logs"; // 返回模板文件名，不需要文件扩展名
+    }
+
 }

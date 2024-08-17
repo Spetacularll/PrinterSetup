@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Product Records</title>
+    <title>产品记录</title>
 </head>
 <body>
-<h1>Product Records</h1>
+<h1>产品记录</h1>
 
-<h2>Product Details</h2>
-<p>Product Name: <span th:text="${product.productName}"></span></p>
-<p>Barcode: <span th:text="${product.barcode}"></span></p>
-<p>Category: <span th:text="${product.category}"></span></p>
-<p>Price: <span th:text="${product.price}"></span></p>
-<p>Description: <span th:text="${product.description}"></span></p>
-<p>Stock: <span th:text="${product.stock}"></span></p>
+<h2>产品详情</h2>
+<p>产品名称: <span th:text="${product.productName}"></span></p>
+<p>条形码: <span th:text="${product.barcode}"></span></p>
+<p>类别: <span th:text="${product.category}"></span></p>
+<p>价格: <span th:text="${product.price}"></span></p>
+<p>描述: <span th:text="${product.description}"></span></p>
+<p>库存: <span th:text="${product.stock}"></span></p>
 
-<h2>Inbound Records</h2>
+<h2>入库记录</h2>
 <table>
     <thead>
     <tr>
-        <th>Inbound ID</th>
-        <th>Supplier</th>
-        <th>Quantity</th>
-        <th>Date</th>
+        <th>入库ID</th>
+        <th>供应商</th>
+        <th>数量</th>
+        <th>日期</th>
     </tr>
     </thead>
     <tbody>
@@ -34,14 +34,14 @@
     </tbody>
 </table>
 
-<h2>Outbound Records</h2>
+<h2>出库记录</h2>
 <table>
     <thead>
     <tr>
-        <th>Outbound ID</th>
-        <th>Quantity</th>
-        <th>Date</th>
-        <th>Destination</th>
+        <th>出库ID</th>
+        <th>数量</th>
+        <th>日期</th>
+        <th>去向</th>
     </tr>
     </thead>
     <tbody>

@@ -90,7 +90,6 @@
                 <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>com.example.jeweryapp.MyAppApplication</mainClass>
-                    <skip>true</skip>
                 </configuration>
                 <executions>
                     <execution>

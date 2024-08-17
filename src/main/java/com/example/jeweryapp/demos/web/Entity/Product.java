@@ -4,6 +4,7 @@ import javax.persistence.*;
 
 import com.example.jeweryapp.demos.web.Component.AuditListener;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -13,7 +14,8 @@ import java.math.BigDecimal;
 @Table(name = "Products")
 @NoArgsConstructor
 @AllArgsConstructor
-@EntityListeners({AuditingEntityListener.class, AuditListener.class})
+@Data
+//@EntityListeners({AuditingEntityListener.class, AuditListener.class})
 public class Product {
 
     @Id
@@ -47,6 +49,10 @@ public class Product {
     private int stock;
     @Column(nullable = false)
     private boolean isDeleted=false;
+
+    @Column(length = 255)
+    private String imageUrl; // 新增字段用于存储图片路径或URL
+
 
     public int getStock() {
         return stock;
