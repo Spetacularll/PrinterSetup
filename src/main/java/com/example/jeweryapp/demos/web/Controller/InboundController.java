@@ -34,7 +34,7 @@ public class InboundController {
             if (!imageFile.isEmpty()) {
                 // 生成文件名和保存路径
                 String fileName = imageFile.getOriginalFilename();
-                String uploadDir = "src/main/resources/static/product-images/"; // 定义保存路径
+                String uploadDir = "/var/www/uploads/"; // 定义保存路径
                 String filePath = uploadDir + fileName;
 
                 // 创建目录并保存文件
@@ -43,7 +43,7 @@ public class InboundController {
                 Files.write(path, imageFile.getBytes());
                 System.out.println("图片上传成功: " + filePath);
                 // 设置图片URL到产品实体中
-                product.setImageUrl("/" + filePath);
+                product.setImageUrl("http://8.134.109.68:8080/" + fileName);
             }
 
             // 调用服务方法创建产品和入库记录
