@@ -19,4 +19,9 @@ public class HomeController {
         return "audit-logs"; // 返回模板文件名，不需要文件扩展名
     }
 
+    @GetMapping("/barbar")
+    public String viewBarcodePage() {
+        return "BCGenerator";
+    }
+
 }

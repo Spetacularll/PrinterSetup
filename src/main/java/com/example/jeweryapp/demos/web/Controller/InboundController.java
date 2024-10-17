@@ -43,7 +43,7 @@ public class InboundController {
                 Files.write(path, imageFile.getBytes());
                 System.out.println("图片上传成功: " + filePath);
                 // 设置图片URL到产品实体中
-                product.setImageUrl("http://8.134.109.68:8080/" + fileName);
+                product.setImageUrl("http://8.138.89.11:8080/" + fileName);
             }
 
             // 调用服务方法创建产品和入库记录

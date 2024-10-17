@@ -23,15 +23,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
     }
 
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/login", "/resources/**", "/css/**").permitAll()
+        http.csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/login", "/resources/**", "/css/**", "/barcode-form", "/submit-barcode-data").permitAll() // 允许所有用户访问表单页面和提交表单
                 .antMatchers("/api/products/barcode").hasAuthority("ROLE_ADMIN")
                 .antMatchers("/api/inbound/product").hasAuthority("ROLE_ADMIN")
                 .antMatchers("/api/audit-logs").hasAuthority("ROLE_ADMIN")
                 .antMatchers("/api/outbound").hasAuthority("ROLE_ADMIN")
                 .antMatchers("/api/records").hasAuthority("ROLE_ADMIN")
+                .antMatchers("/print-barcodes").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -40,8 +43,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .and()
                 .logout()
-                .logoutUrl("/logout") // 设置注销的URL
-                .logoutSuccessUrl("/login?logout") // 注销成功后重定向的URL
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout")
                 .permitAll();
     }
 
