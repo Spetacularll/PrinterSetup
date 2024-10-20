@@ -10,6 +10,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -23,18 +26,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
     }
 
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http
+                .cors()  // 允许跨域请求
+                .and()
                 .authorizeRequests()
-                .antMatchers("/login", "/resources/**", "/css/**", "/barcode-form", "/submit-barcode-data").permitAll() // 允许所有用户访问表单页面和提交表单
-                .antMatchers("/api/products/barcode").hasAuthority("ROLE_ADMIN")
-                .antMatchers("/api/inbound/product").hasAuthority("ROLE_ADMIN")
-                .antMatchers("/api/audit-logs").hasAuthority("ROLE_ADMIN")
-                .antMatchers("/api/outbound").hasAuthority("ROLE_ADMIN")
-                .antMatchers("/api/records").hasAuthority("ROLE_ADMIN")
-                .antMatchers("/print-barcodes").hasAuthority("ROLE_ADMIN")
+                .antMatchers("/login", "/resources/**", "/css/**", "/barcode-form", "/submit-barcode-data").permitAll()
+                .antMatchers("/generate-and-print-barcode").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -48,6 +47,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("http://localhost:8080");  // 添加允许的域名
+        configuration.addAllowedMethod("*");  // 允许所有 HTTP 方法
+        configuration.addAllowedHeader("*");  // 允许所有请求头
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

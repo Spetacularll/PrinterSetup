@@ -1,6 +1,6 @@
 package com.example.jeweryapp.demos.web.Controller;
 
-import com.example.jeweryapp.demos.web.Service.BarcodeService;
+import com.example.jeweryapp.demos.web.Component.BarcodePrinter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +21,16 @@ import java.io.InputStream;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.awt.print.*;
+import com.google.zxing.*;
+import com.google.zxing.client.j2se.*;
+import com.google.zxing.common.BitMatrix;
+import java.awt.*;
+
 
 @Controller
 public class BarcodeController {
 
-    @Autowired
-    private BarcodeService barcodeService;
 
     // 显示输入表单页面
     @GetMapping("/barcode-form")
@@ -110,30 +114,32 @@ public class BarcodeController {
         }
     }
 
+    @PostMapping("/generate-and-print-barcode")
+    public ResponseEntity<String> generateAndPrintBarcode(@RequestBody Map<String, String> request) {
+        String barcodeText = request.get("text");
 
+        if (barcodeText != null && !barcodeText.isEmpty()) {
+            try {
+                // 使用 ZXing 生成条形码并打印
+                BarcodePrinter barcodePrinter = new BarcodePrinter(barcodeText);
 
-    // 处理表单提交并生成条形码
-    @PostMapping("/submit-barcode-data")
-    public String submitBarcodeData(
-            @RequestParam("type") int type,
-            @RequestParam("color") int color,
-            @RequestParam("name") String name,
-            @RequestParam("thickness") int thickness,
-            @RequestParam("price") String price,
-            Model model) {
+                PrinterJob job = PrinterJob.getPrinterJob();
+                job.setPrintable(barcodePrinter);
 
-        // 构建条形码数据字符串
-        String barcodeData = type + name + "/" + thickness + price;
+                // 自定义纸张格式
+                PageFormat customPageFormat = BarcodePrinter.getCustomPageFormat(job);
+                job.setPrintable(barcodePrinter, customPageFormat);
 
-        // 生成条形码
-        try {
-            barcodeService.generateBarcodes(List.of(barcodeData));
-        } catch (Exception e) {
-            e.printStackTrace();
+                // 自动打印，不显示对话框
+                job.print();
+
+                return ResponseEntity.ok("条形码已成功生成并打印");
+            } catch (Exception e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("打印失败");
+            }
         }
-
-        // 将生成的条形码文件名传递给前端
-        model.addAttribute("barcodes", List.of(barcodeData));
-        return "barcode-page";  // 返回展示条形码的页面
+        return ResponseEntity.badRequest().body("无效的条形码文本");
     }
+
 }

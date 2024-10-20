@@ -1,89 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>批量生成条形码并打印</title>
+    <title>条形码生成和打印</title>
 </head>
 <body>
-<h2>批量条形码生成器</h2>
-<form id="barcode-form">
-    <label for="barcode-input">输入每行一个条形码内容:</label>
-    <textarea id="barcode-input" rows="5" cols="30" placeholder="每行一个条形码内容"></textarea>
-    <button type="button" onclick="generateBarcodes()">生成条形码</button>
-</form>
+<h1>输入内容生成条形码</h1>
+<input type="text" id="barcodeText" placeholder="请输入条形码内容" />
+<button onclick="sendBarcodeTextToServer()">生成并打印条形码</button>
 
-<h3>条形码预览</h3>
-<div id="barcode-container"></div>
-
-<button onclick="sendBarcodesToServer()">发送到服务器并打印条形码</button>
-
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 <script>
-    let barcodeImages = [];
+    function sendBarcodeTextToServer() {
+        const barcodeText = document.getElementById('barcodeText').value;
 
-    function generateBarcodes() {
-        const input = document.getElementById('barcode-input').value;
-        const barcodeContainer = document.getElementById('barcode-container');
-        barcodeContainer.innerHTML = ''; // 清空之前的条形码
-        barcodeImages = []; // 清空之前的条形码图片数组
-
-        if (input.trim()) {
-            const values = input.split('\n').map(line => line.trim()).filter(line => line !== '');
-
-            values.forEach((value, index) => {
-                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                svg.id = 'barcode-' + index;
-                barcodeContainer.appendChild(svg);
-
-                JsBarcode(svg, value, {
-                    format: "CODE128",
-                    lineColor: "#0aa",
-                    width: 2,
-                    height: 100,
-                    displayValue: true
-                });
-
-                // 将条形码转为 base64 图片
-                const svgData = new XMLSerializer().serializeToString(svg);
-                const canvas = document.createElement("canvas");
-                const ctx = canvas.getContext("2d");
-                const img = new Image();
-                const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
-                const url = URL.createObjectURL(svgBlob);
-
-                img.onload = function() {
-                    ctx.drawImage(img, 0, 0);
-                    URL.revokeObjectURL(url);
-                    const dataURL = canvas.toDataURL("image/png");
-                    barcodeImages.push(dataURL); // 保存生成的 base64 图片
-                };
-
-                img.src = url;
-            });
-        } else {
-            alert('请输入至少一个条形码内容');
-        }
-    }
-
-    function sendBarcodesToServer() {
-        if (barcodeImages.length > 0) {
-            fetch('/print-barcodes', {
+        if (barcodeText) {
+            fetch('/generate-and-print-barcode', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ images: barcodeImages })
+                body: JSON.stringify({ text: barcodeText })
             })
                 .then(response => response.json())
                 .then(data => {
-                    alert('条形码发送成功，正在打印');
+                    alert('条形码生成并发送至打印机');
                 })
                 .catch((error) => {
                     console.error('Error:', error);
+                    alert('生成条形码失败');
                 });
         } else {
-            alert('请先生成条形码');
+            alert('请输入条形码内容');
         }
     }
 </script>
