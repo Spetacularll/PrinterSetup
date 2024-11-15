@@ -102,10 +102,11 @@ public class ProductService {
     }
 
     @Transactional
-    public OutboundRecord addOutboundRecord(Long productId, String destination) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID: " + productId));
-
+    public OutboundRecord addOutboundRecord(String barcode, String destination) {
+        Product product = productRepository.findByBarcode(barcode)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID: " + barcode));
+//        Product product = productRepository.findProductByBarcode(barcode)
+//                .orElseThrow(() -> new IllegalArgumentException("Invalid product barcode: "+ barcode ));
         if (product.getStock() == 0) {
             throw new IllegalStateException("Product is out of stock");
         }

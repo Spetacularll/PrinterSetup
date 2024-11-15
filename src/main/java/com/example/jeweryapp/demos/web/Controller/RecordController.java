@@ -16,6 +16,12 @@ import java.util.List;
 @Controller
 @RequestMapping("/api")
 public class RecordController {
+/**
+ *
+ * To Search a single product with the barcode.
+ * corresponding to the query action.
+ * To get all the Record to that product
+ * **/
 
     @Autowired
     private RecordService recordService;

@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>条形码生成和打印</title>
+    <!-- 注入 CSRF 令牌到 meta 标签 -->
+    <meta name="_csrf" content="${_csrf.token}" />
+    <meta name="_csrf_header" content="${_csrf.headerName}" />
 </head>
 <body>
 <h1>输入内容生成条形码</h1>
@@ -13,20 +16,48 @@
 <script>
     function sendBarcodeTextToServer() {
         const barcodeText = document.getElementById('barcodeText').value;
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        // Logging values for debugging
+        console.log('CSRF Token:', csrfToken);
+        console.log('CSRF Header:', csrfHeader);
+
+        if (!csrfHeader || !csrfToken) {
+            console.error('CSRF token or header is missing');
+            alert('CSRF token or header is missing');
+            return;
+        }
 
         if (barcodeText) {
+            // 创建 headers 对象
+            const headers = new Headers();
+            headers.append('Content-Type', 'application/json');
+
+            try {
+                // 动态添加 CSRF 头部
+                headers.append(csrfHeader, csrfToken);
+            } catch (error) {
+                console.error('Invalid header name or value:', csrfHeader, csrfToken);
+                return;
+            }
+
             fetch('/generate-and-print-barcode', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: headers,
                 body: JSON.stringify({ text: barcodeText })
             })
-                .then(response => response.json())
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Failed to generate barcode');
+                    }
+                })
                 .then(data => {
                     alert('条形码生成并发送至打印机');
                 })
-                .catch((error) => {
+                .catch(error => {
                     console.error('Error:', error);
                     alert('生成条形码失败');
                 });

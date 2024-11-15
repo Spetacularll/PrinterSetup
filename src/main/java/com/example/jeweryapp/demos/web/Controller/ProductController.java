@@ -2,6 +2,8 @@ package com.example.jeweryapp.demos.web.Controller;
 
 import com.example.jeweryapp.demos.web.Entity.Product;
 import com.example.jeweryapp.demos.web.Service.ProductService;
+import com.example.jeweryapp.demos.web.common.response.ApiResponse;
+import com.example.jeweryapp.demos.web.common.response.ResultCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,50 +17,55 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-@Controller
+@RestController // 使用 @RestController 而不是 @Controller
 @RequestMapping("/api/products")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
-
+    /**
+     *  To get all the products in stock.
+     *  GET API
+     * **/
+    @GetMapping("/inbound")
+    public ApiResponse<List<Product>> getAllProducts() {
+        List<Product> products = productService.getProductsInStock();
+        return ApiResponse.success(products);
+    }
+    /**
+     * 
+     * **/
+    // 根据条码获取产品
     @GetMapping("/barcode")
-    public String getProductByBarcode(@RequestParam(value = "barcode", required = false) String barcode, Model model) {
+    public ApiResponse<Product> getProductByBarcode(@RequestParam(value = "barcode", required = false) String barcode) {
         if (barcode != null) {
             try {
                 Product product = productService.getProductByBarcode(barcode);
-                model.addAttribute("product", product);
+                return ApiResponse.success(product);
             } catch (IllegalArgumentException e) {
-                model.addAttribute("error", e.getMessage());
+                return ApiResponse.error(ResultCode.NOT_FOUND.getCode(), e.getMessage());
             }
+        } else {
+            return ApiResponse.error(ResultCode.PARAM_ERROR.getCode(), "条码不能为空");
         }
-        return "product-edit";
     }
+
     @PostMapping("/delete")
-    public String deleteProductByBarcode(@RequestParam String barcode, Model model) {
+    public ApiResponse<Void> deleteProductByBarcode(@RequestParam String barcode) {
         try {
             productService.deleteProductByBarcode(barcode);
-            model.addAttribute("success", "Product marked as deleted successfully");
+            return ApiResponse.success(null, "Product marked as deleted successfully"); // 传入 null 作为数据部分
         } catch (IllegalArgumentException e) {
-            model.addAttribute("error", e.getMessage());
+            return ApiResponse.error(ResultCode.NOT_FOUND.getCode(), e.getMessage());
         }
-        return "redirect:/api/products/inbound"; // 重定向到 products-in-stock 页面
-    }
-
-    @GetMapping("/inbound")
-    public String viewProductsInStock(Model model) {
-        List<Product> productsInStock = productService.getProductsInStock();
-        model.addAttribute("products", productsInStock);
-        return "products-in-stock";
     }
 
 
-
+    // 根据条码更新产品
     @PostMapping("/barcode")
-    public String updateProductByBarcode(@RequestParam String barcode,
-                                         @ModelAttribute Product updatedProduct,
-                                         @RequestParam("imageFile") MultipartFile imageFile, // 新增的图片文件
-                                         Model model) {
+    public ApiResponse<Product> updateProductByBarcode(@RequestParam String barcode,
+                                                       @ModelAttribute Product updatedProduct,
+                                                       @RequestParam("imageFile") MultipartFile imageFile) {
         try {
             // 根据条形码找到现有产品
             Product existingProduct = productService.findProductByBarcode(barcode);
@@ -88,18 +95,13 @@ public class ProductController {
             // 更新产品信息
             Product product = productService.updateProductByBarcode(barcode, existingProduct);
 
-            // 将更新后的产品信息添加到模型中
-            model.addAttribute("product", product);
-            model.addAttribute("success", "Product updated successfully");
+            // 返回成功响应
+            return ApiResponse.success(product, "Product updated successfully");
 
         } catch (IOException e) {
-            model.addAttribute("error", "Image upload failed: " + e.getMessage());
+            return ApiResponse.error(ResultCode.DATA_ERROR.getCode(), "Image upload failed: " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            model.addAttribute("error", e.getMessage());
+            return ApiResponse.error(ResultCode.NOT_FOUND.getCode(), e.getMessage());
         }
-
-        // 返回到编辑页面
-        return "product-edit";
     }
-
 }

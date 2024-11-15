@@ -19,6 +19,23 @@ public class Supplier {
 
     @Column(length = 100)
     private String contactName;
+    @Column(length = 20)
+    private String phoneNumber;
+
+    @Column(length = 100)
+    private String email;
+
+    @Column(columnDefinition = "TEXT")
+    private String address;
+    private boolean isDeleted;
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
 
     public Long getSupplierId() {
         return supplierId;
@@ -68,14 +85,6 @@ public class Supplier {
         this.address = address;
     }
 
-    @Column(length = 20)
-    private String phoneNumber;
-
-    @Column(length = 100)
-    private String email;
-
-    @Column(columnDefinition = "TEXT")
-    private String address;
 
     // Getters and setters
 }
