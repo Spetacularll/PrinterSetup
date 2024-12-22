@@ -63,7 +63,8 @@ public class SecurityConfig {
                         "/assets/**",       // Vue 打包后静态资源路径
                         "/static/**",       // 其他静态资源路径
                         "/favicon.ico",     // 网站图标
-                        "/manifest.json"    // PWA 或 Vue 配置的资源
+                        "/manifest.json",    // PWA 或 Vue 配置的资源
+                        "/login"
                 ).permitAll()          // 允许匿名访问
                 .antMatchers("/generate-and-print-barcode").hasRole("ADMIN")  // 只有 ADMIN 角色可以访问
                 .anyRequest().authenticated()  // 其他所有请求都需要认证

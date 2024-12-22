@@ -41,7 +41,9 @@ public class Product {
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
-
+/**
+ * 圈口信息
+ * **/
     @Column(columnDefinition = "TEXT")
     private String description;
 

@@ -5,6 +5,7 @@ import com.example.jeweryapp.demos.web.Entity.OutboundRecord;
 import com.example.jeweryapp.demos.web.Entity.Product;
 import com.example.jeweryapp.demos.web.Service.OutboundRecordService;
 import com.example.jeweryapp.demos.web.Service.ProductService;
+import com.example.jeweryapp.demos.web.common.OutRecord;
 import com.example.jeweryapp.demos.web.common.OutboundRequest;
 import com.example.jeweryapp.demos.web.common.response.ApiResponse;
 import com.example.jeweryapp.demos.web.common.response.ResultCode;
@@ -36,25 +37,16 @@ public class OutboundRecordController {
 
 
     @GetMapping("/outbound-records")
-    public ApiResponse<List<OutboundRecord>> getOutboundRecords() {
-        List<OutboundRecord> outboundRecords = outboundRecordService.getAllOutboundRecords();
-        return ApiResponse.success(outboundRecords);
-    }
+    public ApiResponse<List<OutRecord>> getOutboundRecords() {
+//        List<OutboundRecord> outboundRecords = outboundRecordService.getAllOutboundRecords();
+//        return ApiResponse.success(outboundRecords);
+    List<OutRecord> OutboundRecords = outboundRecordService.getAllOutboundRecords();
+    for (OutRecord outRecord : OutboundRecords) {
 
-    @GetMapping("/barcode")
-    public ApiResponse<Product> getProductByBarcode(@RequestParam(value = "barcode", required = true) String barcode) {
-        if (barcode != null) {
-            try {
-                Product product = productService.getProductByBarcode(barcode);
-                return ApiResponse.success(product);
-            } catch (IllegalArgumentException e) {
-                return ApiResponse.error(ResultCode.NOT_FOUND.getCode(), "未找到该条码对应的产品");
-            }
-        } else {
-            return ApiResponse.error(ResultCode.PARAM_ERROR.getCode(), "条码不能为空");
-        }
+        System.out.println(outRecord+"the size of which is :" + OutboundRecords.size());
     }
-
+    return ApiResponse.success(OutboundRecords);
+    }
 
     @GetMapping("/success")
     public ApiResponse<Void> showSuccess() {

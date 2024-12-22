@@ -1,6 +1,7 @@
 package com.example.jeweryapp.demos.web.Component;
 
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
@@ -11,25 +12,36 @@ import java.awt.image.BufferedImage;
 import java.awt.print.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class BarcodePrinter implements Printable {
 
+    private static final AtomicInteger COUNTER = new AtomicInteger(1); // 条形码计数器
     private BufferedImage barcodeImage;
-    private String barcodeText;  // 条形码的文本内容
+    private String displayText;
 
-    // 构造函数，生成条形码
-    public BarcodePrinter(String text) throws Exception {
-        this.barcodeText = text;
-        this.barcodeImage = generateBarcodeImage(text);
+    public BarcodePrinter(String displayText, String barcodeNumber) throws Exception {
+        this.displayText = displayText;
+        this.barcodeImage = generateBarcodeImage(barcodeNumber);
     }
 
-    // 使用 ZXing 生成条形码图片
     private BufferedImage generateBarcodeImage(String text) throws Exception {
-        int width = 113; // 设置条形码宽度
-        int height = 50; // 设置条形码高度，留出空间给文字显示
+        int width = 120;  // 调整条形码宽度至纸张可打印范围内
+        int height = 40;  // 高度适中以适配条形码清晰度
         String imageFormat = "png";
 
-        BitMatrix bitMatrix = new MultiFormatWriter().encode(text, BarcodeFormat.CODE_128, width, height);
+        Map<EncodeHintType, Object> hints = new HashMap<>();
+        hints.put(EncodeHintType.MARGIN, 0); // 移除条形码边距
+
+        BitMatrix bitMatrix = new MultiFormatWriter().encode(
+                text,
+                BarcodeFormat.CODE_128,
+                width,
+                height,
+                hints
+        );
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         MatrixToImageWriter.writeToStream(bitMatrix, imageFormat, outputStream);
@@ -38,7 +50,6 @@ public class BarcodePrinter implements Printable {
         return ImageIO.read(inputStream);
     }
 
-    // 打印机接口实现，用于打印条形码及文本
     @Override
     public int print(Graphics g, PageFormat pageFormat, int pageIndex) throws PrinterException {
         if (pageIndex > 0) {
@@ -46,60 +57,90 @@ public class BarcodePrinter implements Printable {
         }
 
         Graphics2D g2d = (Graphics2D) g;
-        g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
 
-        // 绘制条形码图片
-        g.drawImage(barcodeImage, 0, 0, null);
+        // 可打印区域的起点
+        double imageableX = pageFormat.getImageableX();
+        double imageableY = pageFormat.getImageableY();
 
-        // 设置字体和字体大小
-        g2d.setFont(new Font("Arial", Font.PLAIN, 10));
+        // 可打印区域的宽度和高度
+        double imageableWidth = pageFormat.getImageableWidth();
+        double imageableHeight = pageFormat.getImageableHeight();
 
-        // 计算文本的绘制位置，确保文字在条形码下方显示
-        int textX = 0;  // 文字的X坐标与条形码图片对齐
-        int textY = barcodeImage.getHeight() + 20;  // 文字的Y坐标，位于条形码图片下方
+        // 条形码和文字的总高度
+        int totalHeight = barcodeImage.getHeight() + 10; // 条形码高度 + 文字间距
 
-        // 绘制条形码对应的文本内容
-        g2d.drawString(barcodeText, textX, textY);
+        // 居中计算
+        double x = imageableX + (imageableWidth - barcodeImage.getWidth()) / 2;
+        double y = imageableY + (imageableHeight - totalHeight) / 2;
+
+        // 下移20单位
+        y += 20;
+
+        g2d.translate(x, y);
+
+        // 分割显示文本
+        String[] lines = displayText.split(" ", 2);
+        g2d.setFont(new Font("Arial", Font.PLAIN, 12));
+
+        // 调整文本打印位置上移5单位
+        g2d.drawString(lines[0], 20, -20); // 第一行文字距离条形码上方10点
+        if (lines.length > 1) {
+            g2d.drawString(lines[1], 20, -10); // 第二行文字紧贴条形码上方
+        }
+
+        // 绘制条形码
+        g.drawImage(barcodeImage, 10, -5, null); // 下移20单位
 
         return PAGE_EXISTS;
     }
 
-    // 自定义纸张格式：4.0 cm * 3.0 cm
+
     public static PageFormat getCustomPageFormat(PrinterJob printerJob) {
         PageFormat pageFormat = printerJob.defaultPage();
         Paper paper = new Paper();
 
-        // 设置纸张大小，单位是点 (1cm = 28.35 points)
-        double paperWidth = 113.4; // 4.0 cm in points
-        double paperHeight = 85.05; // 3.0 cm in points
+        double paperWidth = 40 * 2.835;  // ≈ 113.4 points
+        double paperHeight = 30 * 2.835; // ≈ 85.05 points
         paper.setSize(paperWidth, paperHeight);
 
-        // 设置可打印区域，给出边距 (如无边距设置为 0)
-        double margin = 5; // 设置 5 点的边距（可调整）
-        paper.setImageableArea(margin, margin, paperWidth - 2 * margin, paperHeight - 2 * margin);
+        double margin = 5; // 边距设置为5
+        paper.setImageableArea(
+                margin,
+                margin,
+                paperWidth - 2 * margin,
+                paperHeight - 2 * margin
+        );
 
         pageFormat.setPaper(paper);
-
         return pageFormat;
     }
 
-    // 测试条形码打印功能
     public static void main(String[] args) {
-        try {
-            BarcodePrinter barcodePrinter = new BarcodePrinter("x./qwe123");
+        while (true) {
+            try {
+                // 获取当前条形码编号，格式化为8位
+                String barcodeNumber = String.format("%08d", COUNTER.getAndIncrement());
 
-            PrinterJob job = PrinterJob.getPrinterJob();
-            job.setPrintable(barcodePrinter);
+                // 输入显示文本
+                System.out.println("请输入显示文本:");
+                java.util.Scanner scanner = new java.util.Scanner(System.in);
+                String displayText = scanner.nextLine();
 
-            PageFormat customPageFormat = getCustomPageFormat(job);
-            job.setPrintable(barcodePrinter, customPageFormat);
+                BarcodePrinter barcodePrinter = new BarcodePrinter(displayText, barcodeNumber);
 
-            boolean doPrint = job.printDialog();
-            if (doPrint) {
-                job.print();
+                PrinterJob job = PrinterJob.getPrinterJob();
+                job.setPrintable(barcodePrinter);
+
+                PageFormat customPageFormat = getCustomPageFormat(job);
+                job.setPrintable(barcodePrinter, customPageFormat);
+
+                boolean doPrint = job.printDialog();
+                if (doPrint) {
+                    job.print();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

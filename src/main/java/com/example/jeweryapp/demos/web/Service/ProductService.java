@@ -57,6 +57,17 @@ public class ProductService {
 
     }
 
+    public String getFormattedId(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+
+        // 获取主键值
+        Long id = product.getId();
+
+        // 转换为左侧填充的8位字符串
+        return String.format("%08d", id);
+    }
+
     @Transactional
     public InboundRecord addInboundRecord(Long productId, Long supplierId) {
         Product product = productRepository.findById(productId)
