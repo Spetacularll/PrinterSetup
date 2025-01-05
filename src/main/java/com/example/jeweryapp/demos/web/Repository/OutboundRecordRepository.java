@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface OutboundRecordRepository extends JpaRepository<OutboundRecord,Long> {
     List<OutboundRecord> findByProduct(Product product);
-    @Query("SELECT new com.example.jeweryapp.demos.web.common.OutRecord(o.destination, p.productName, o.outboundDate, p.price,p.barcode) " +
+    @Query("SELECT new com.example.jeweryapp.demos.web.common.OutRecord(o.destination, p.owner, o.outboundDate, p.price,p.barcode) " +
             "FROM OutboundRecord o " +
             "JOIN o.product p")
     List<OutRecord> findAllOutboundRecords();

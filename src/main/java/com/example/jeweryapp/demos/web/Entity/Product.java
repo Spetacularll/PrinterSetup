@@ -2,11 +2,7 @@ package com.example.jeweryapp.demos.web.Entity;
 
 import javax.persistence.*;
 
-import com.example.jeweryapp.demos.web.Component.AuditListener;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -18,12 +14,15 @@ import java.math.BigDecimal;
 //@EntityListeners({AuditingEntityListener.class, AuditListener.class})
 public class Product {
 
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
 
+    @Setter
+    @Getter
     @Column(nullable = false, length = 100)
-    private String productName;
+    private String owner;
 
     public boolean isDeleted() {
         return isDeleted;
@@ -33,20 +32,34 @@ public class Product {
         isDeleted = deleted;
     }
 
+    @Setter
+    @Getter
     @Column(nullable = false, unique = true, length = 50)
     private String barcode;
 
+
+    /**
+     * 种类
+     * **/
+    @Setter
+    @Getter
     @Column(length = 50)
     private String category;
 
+    @Setter
+    @Getter
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 /**
- * 圈口信息
+ * 圈口信息+厚度
  * **/
+    @Setter
+    @Getter
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Setter
+    @Getter
     @Column(nullable = false)
     private int stock;
     @Column(nullable = false)
@@ -56,60 +69,8 @@ public class Product {
     private String imageUrl; // 新增字段用于存储图片路径或URL
 
 
-    public int getStock() {
-        return stock;
-    }
-
-    public void setStock(int stock) {
-        this.stock = stock;
-    }
-
     public Long getId() {
         return productId;
-    }
-
-    public void setProductId(Long productId) {
-        this.productId = productId;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public String getBarcode() {
-        return barcode;
-    }
-
-    public void setBarcode(String barcode) {
-        this.barcode = barcode;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     // Getters and setters

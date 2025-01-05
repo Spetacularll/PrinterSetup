@@ -9,19 +9,16 @@ import com.example.jeweryapp.demos.web.Repository.InboundRecordRepository;
 import com.example.jeweryapp.demos.web.Repository.OutboundRecordRepository;
 import com.example.jeweryapp.demos.web.Repository.ProductRepository;
 import com.example.jeweryapp.demos.web.Repository.SupplierRepository;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
+import javax.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
 
 @Service
@@ -67,6 +64,34 @@ public class ProductService {
         // 转换为左侧填充的8位字符串
         return String.format("%08d", id);
     }
+    public List<Product> searchProducts(String owner, String category, Double priceMin, Double priceMax) {
+        // 如果所有参数均为 null，则直接返回所有产品
+        if (owner == null && category == null && priceMin == null && priceMax == null) {
+            return productRepository.findAll((root, query, builder) -> {
+                // 强制添加 isDeleted 条件
+                return builder.isFalse(root.get("isDeleted"));
+            });
+        }
+
+        return productRepository.findAll((root, query, builder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(builder.isFalse(root.get("isDeleted")));
+            if (owner != null) {
+                predicates.add(builder.equal(root.get("owner"), owner));
+            }
+            if (category != null) {
+                predicates.add(builder.equal(root.get("category"), category));
+            }
+            if (priceMin != null) {
+                predicates.add(builder.greaterThanOrEqualTo(root.get("price"), priceMin));
+            }
+            if (priceMax != null) {
+                predicates.add(builder.lessThanOrEqualTo(root.get("price"), priceMax));
+            }
+
+            return builder.and(predicates.toArray(new Predicate[0]));
+        });
+    }
 
     @Transactional
     public InboundRecord addInboundRecord(Long productId, Long supplierId) {
@@ -103,7 +128,7 @@ public class ProductService {
         Supplier supplier = supplierRepository.findById(supplierId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid supplier ID: " + supplierId));
         product.setStock(1);
-        product = productRepository.save(product);
+ //       product = productRepository.save(product);
         InboundRecord inboundRecord = new InboundRecord();
         inboundRecord.setProduct(product);
         inboundRecord.setSupplier(supplier);
@@ -111,6 +136,7 @@ public class ProductService {
         inboundRecord.setInboundDate(LocalDateTime.now());
         return inboundRecordRepository.save(inboundRecord);
     }
+
 
     @Transactional
     public OutboundRecord addOutboundRecord(String barcode, String destination) {
@@ -150,7 +176,7 @@ public class ProductService {
         Product product = productRepository.findByBarcode(barcode)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid barcode: " + barcode));
 
-        product.setProductName(updatedProduct.getProductName());
+        product.setOwner(updatedProduct.getOwner());
         product.setCategory(updatedProduct.getCategory());
         product.setPrice(updatedProduct.getPrice());
         product.setDescription(updatedProduct.getDescription());

@@ -8,9 +8,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BarcodeRequest {
-    private int category;     // 种类 (0-20)
-    private int color;        // 颜色编码 (0-10)
-    private String name;      // 名称简写
-    private String thickness; // 厚度
-    private String price;     // 价格
+    private String style;         // 样式
+    private String owner;         // 所有人
+    private String time;          // 时间
+    private String serialNumber;  // 编号
+    private Double circleSize;    // 圈口
+    private Integer width;        // 宽度
+    private Integer price;
+    private Integer supplier;
 }

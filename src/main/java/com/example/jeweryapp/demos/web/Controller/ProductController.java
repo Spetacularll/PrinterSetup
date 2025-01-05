@@ -5,9 +5,6 @@ import com.example.jeweryapp.demos.web.Service.ProductService;
 import com.example.jeweryapp.demos.web.common.response.ApiResponse;
 import com.example.jeweryapp.demos.web.common.response.ResultCode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 @RestController // 使用 @RestController 而不是 @Controller
 @RequestMapping("/api/products")
@@ -27,10 +25,16 @@ public class ProductController {
      *  To get all the products in stock.
      *  GET API
      * **/
-    @GetMapping("/inbound")
-    public ApiResponse<List<Product>> getAllProducts() {
-        List<Product> products = productService.getProductsInStock();
-        return ApiResponse.success(products);
+    @GetMapping("/search")
+    public ApiResponse<List<Product>> getAllProducts(
+            @RequestParam(required = false) String owner,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Double priceMin,
+            @RequestParam(required = false) Double priceMax)
+     {
+         List<Product> products = productService.searchProducts(owner, category, priceMin, priceMax);
+         System.out.println(products.size());
+         return ApiResponse.success(products);
     }
     /**
      * 
@@ -51,16 +55,25 @@ public class ProductController {
     }
 
     @PostMapping("/delete")
-    public ApiResponse<Void> deleteProductByBarcode(@RequestParam String barcode) {
+    public ApiResponse<Void> deleteProductByBarcode(@RequestBody Map<String, String> payload) {
+        String barcode = payload.get("barcode");
+
+        if (barcode == null || barcode.isEmpty()) {
+            throw new IllegalArgumentException("Barcode cannot be null or empty");
+        }
         try {
+            System.out.println("Product deleted");
             productService.deleteProductByBarcode(barcode);
-            return ApiResponse.success(null, "Product marked as deleted successfully"); // 传入 null 作为数据部分
+            return ApiResponse.success(null, "Product marked as deleted successfully");
         } catch (IllegalArgumentException e) {
             return ApiResponse.error(ResultCode.NOT_FOUND.getCode(), e.getMessage());
         }
     }
 
 
+/**
+ * 这个不大适用于当前业务
+ * **/
     // 根据条码更新产品
     @PostMapping("/barcode")
     public ApiResponse<Product> updateProductByBarcode(@RequestParam String barcode,
@@ -71,7 +84,7 @@ public class ProductController {
             Product existingProduct = productService.findProductByBarcode(barcode);
 
             // 更新产品的非图片属性
-            existingProduct.setProductName(updatedProduct.getProductName());
+            existingProduct.setOwner(updatedProduct.getOwner());
             existingProduct.setCategory(updatedProduct.getCategory());
             existingProduct.setPrice(updatedProduct.getPrice());
             existingProduct.setDescription(updatedProduct.getDescription());
