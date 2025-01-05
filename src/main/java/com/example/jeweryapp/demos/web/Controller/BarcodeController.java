@@ -23,7 +23,10 @@ import java.awt.print.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -95,7 +98,7 @@ public class BarcodeController {
     }
 
     @PostMapping("/create-product")
-    public ApiResponse<?> createProductWithBarcode(
+    public ApiResponse<?> createProductWithBarcodev1(
             @RequestParam("dto") String dtoString,
             @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
         Map<String, Object> response = new HashMap<>();
@@ -189,6 +192,115 @@ public class BarcodeController {
             return ApiResponse.error("操作失败: " + e.getMessage());
         }
     }
+
+
+    @PostMapping("/create-productv1")
+    public ApiResponse<?> createProductWithBarcode(
+            @RequestParam("dto") String dtoString,
+            @RequestParam(value = "imageFile", required = false) MultipartFile imageFile) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // 解析 DTO JSON 数据
+            ObjectMapper objectMapper = new ObjectMapper();
+            BarcodeRequest barcodeRequest = objectMapper.readValue(dtoString, BarcodeRequest.class);
+
+            // 验证 DTO 数据的完整性
+            if (barcodeRequest.getStyle() == null || barcodeRequest.getOwner() == null ||
+                    barcodeRequest.getTime() == null || barcodeRequest.getSerialNumber() == null ||
+                    barcodeRequest.getCircleSize() == null || barcodeRequest.getWidth() == null ||
+                    barcodeRequest.getPrice() == null || barcodeRequest.getSupplier() == null) {
+                return ApiResponse.error(400, "请求参数不完整");
+            }
+            // 创建 Product 实体并设置属性
+
+            Product product = new Product();
+            product.setCategory(barcodeRequest.getStyle());
+            product.setOwner(barcodeRequest.getOwner());
+            product.setPrice(BigDecimal.valueOf(barcodeRequest.getPrice()));
+            System.out.println(barcodeRequest.getPrice());
+            product.setDescription(barcodeRequest.getCircleSize() + "-" + barcodeRequest.getWidth());
+
+            // 拼接打印内容
+            String result = String.format(
+                    "%s%s%s%s %s%s%s",
+                    barcodeRequest.getStyle(),
+                    barcodeRequest.getOwner(),
+                    barcodeRequest.getTime(),
+                    barcodeRequest.getSerialNumber(),
+                    barcodeRequest.getCircleSize(),
+                    barcodeRequest.getWidth(),
+                    PriceEncoder.encodePrice(barcodeRequest.getPrice())
+            );
+            System.out.println(result);
+
+            // 根据 Owner 设置条形码
+            String barcodeNumber = switch (barcodeRequest.getOwner()) {
+                case "AB" -> "1234" + barcodeRequest.getSerialNumber();
+                case "CD" -> "3446" + barcodeRequest.getSerialNumber();
+                default -> "7693" + barcodeRequest.getSerialNumber();
+            };
+
+            // 发送打印任务到本地打印代理
+            Map<String, String> printTask = new HashMap<>();
+            printTask.put("content", result);
+            printTask.put("barcode", barcodeNumber);
+
+            sendPrintRequestToLocalProxy(printTask);
+
+            // 处理图片文件
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String uploadDir = "/var/www/uploads/";
+                String fileName = imageFile.getOriginalFilename();
+                String filePath = uploadDir + fileName;
+
+                Path path = Paths.get(filePath);
+                Files.createDirectories(path.getParent());
+                Files.write(path, imageFile.getBytes());
+
+                // 设置图片 URL 到产品实体
+                product.setImageUrl("http://8.138.89.11/uploads/" + fileName);
+            }
+
+            // 保存 Product 到数据库
+            productService.saveProduct(product);
+            // 创建并保存 InboundRecord
+            InboundRecord inboundRecord = productService.addProductAndInboundRecord(product, Long.valueOf(barcodeRequest.getSupplier()));
+            // 返回响应
+            response.put("message", "商品和入库记录创建成功");
+            response.put("barcode", barcodeNumber);
+            response.put("inboundRecord", inboundRecord);
+
+            return ApiResponse.success(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ApiResponse.error(500, "服务器错误：" + e.getMessage());
+        }
+    }
+
+    private void sendPrintRequestToLocalProxy(Map<String, String> printTask) throws IOException {
+        String proxyUrl = "http://localhost:8081/print"; // 本地打印代理地址
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        // 将打印任务转化为 JSON
+        String jsonTask = objectMapper.writeValueAsString(printTask);
+
+        // 发送 HTTP POST 请求到本地代理
+        HttpURLConnection connection = (HttpURLConnection) new URL(proxyUrl).openConnection();
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setDoOutput(true);
+
+        try (OutputStream os = connection.getOutputStream()) {
+            os.write(jsonTask.getBytes());
+        }
+
+        int responseCode = connection.getResponseCode();
+        if (responseCode != HttpURLConnection.HTTP_OK) {
+            throw new IOException("Failed to send print request: " + responseCode);
+        }
+    }
+
 
 }
 
