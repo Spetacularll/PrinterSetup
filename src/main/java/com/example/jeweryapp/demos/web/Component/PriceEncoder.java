@@ -13,8 +13,8 @@ public class PriceEncoder {
      * @return 编码后的字符串
      */
     public static String encodePrice(int price) {
-        if (price < 1000 || price > 700000 || price % 1000 != 0) {
-            throw new IllegalArgumentException("价格必须是1000到700000之间，并且是1000的倍数");
+        if (price < 100 || price > 700000 || price % 100 != 0) {
+            throw new IllegalArgumentException("价格必须是100到700000之间，并且是100的倍数");
         }
 
         StringBuilder encoded = new StringBuilder();

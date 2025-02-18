@@ -67,7 +67,7 @@ public class SecurityConfig {
                         "/login"
                 ).permitAll()          // 允许匿名访问
                 .antMatchers("/generate-and-print-barcode").hasRole("ADMIN")  // 只有 ADMIN 角色可以访问
-                .anyRequest().authenticated()  // 其他所有请求都需要认证
+                .anyRequest().permitAll()  // 其他所有请求都需要认证
                 .and()
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(http.getSharedObject(AuthenticationConfiguration.class)), jwtTokenProvider));  // 添加 JWT 过滤器
 

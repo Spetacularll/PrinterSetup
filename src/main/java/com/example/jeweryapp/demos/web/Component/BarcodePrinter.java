@@ -85,7 +85,7 @@ public class BarcodePrinter implements Printable {
         // 调整文本打印位置上移5单位
         g2d.drawString(lines[0], 20, -20); // 第一行文字距离条形码上方10点
         if (lines.length > 1) {
-            g2d.drawString(lines[1], 20, -10); // 第二行文字紧贴条形码上方
+            g2d.drawString(lines[1], 10, -10); // 第二行文字紧贴条形码上方
         }
 
         // 绘制条形码

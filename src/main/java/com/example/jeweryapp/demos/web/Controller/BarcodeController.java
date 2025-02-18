@@ -110,7 +110,7 @@ public class BarcodeController {
 
             // 拼接字符串，注意在编号后添加空格
             String result = String.format(
-                    "%s%s%s%s %s%s%s",
+                    "%s%s%s-%s %s/%s    %s",
                     barcodeRequest.getStyle(),
                     barcodeRequest.getOwner(),
                     barcodeRequest.getTime(),
@@ -140,48 +140,15 @@ public class BarcodeController {
 
             // 根据 Owner 设置条形码
             String barcodeNumber;
-            if ("AB".equals(barcodeRequest.getOwner())) {
-                barcodeNumber = "1234" + barcodeRequest.getSerialNumber();
-                product.setOwner("spring");
-            } else if ("CD".equals(barcodeRequest.getOwner())) {
-                barcodeNumber = "3446" + barcodeRequest.getSerialNumber();
-                product.setOwner("huang");
-            } else {
-                barcodeNumber = "7693" + barcodeRequest.getSerialNumber();
-                product.setOwner("Ayi");
-            }
+            barcodeNumber = "7693" + barcodeRequest.getSerialNumber();
             product.setBarcode(barcodeNumber);
             BarcodePrinter barcodePrinter = new BarcodePrinter(result,barcodeNumber);
             PrinterJob job = PrinterJob.getPrinterJob();
-
             // 设置自定义纸张格式
             PageFormat customPageFormat = BarcodePrinter.getCustomPageFormat(job);
             job.setPrintable(barcodePrinter, customPageFormat);
             // 执行打印
             job.print();
-            // 处理图片文件
-            if (imageFile != null && !imageFile.isEmpty()) {
-                String uploadDir = "/var/www/uploads/";
-                String fileName = imageFile.getOriginalFilename();
-                String filePath = uploadDir + fileName;
-
-                Path path = Paths.get(filePath);
-                Files.createDirectories(path.getParent());
-                Files.write(path, imageFile.getBytes());
-
-                // 设置图片 URL 到产品实体
-                product.setImageUrl("http://8.138.89.11/uploads/" + fileName);
-            }
-            // 保存 Product 到数据库
-            productService.saveProduct(product);
-
-            // 创建并保存 InboundRecord
-            InboundRecord inboundRecord = productService.addProductAndInboundRecord(product, Long.valueOf(barcodeRequest.getSupplier()));
-
-            // 返回响应
-            response.put("message", "商品和入库记录创建成功");
-            response.put("barcode", barcodeNumber);
-            response.put("inboundRecord", inboundRecord);
             return ApiResponse.success(response);
 
         } catch (IOException e) {
