@@ -79,7 +79,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://localhost:5173");  // 前端域名
-        configuration.addAllowedOrigin("http://8.138.89.11:8080"); // 允许的来源
+        configuration.addAllowedOrigin("http://8.138.89.11"); // 允许的来源
         configuration.addAllowedMethod("*");  // 允许所有方法
         configuration.addAllowedHeader("*");  // 允许所有请求头
         configuration.setAllowCredentials(true);  // 允许发送 cookie
