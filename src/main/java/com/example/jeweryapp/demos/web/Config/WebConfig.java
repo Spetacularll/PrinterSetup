@@ -12,6 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:8080") // 允许的前端地址
+                .allowedOrigins("http://8.138.89.11/")
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .allowCredentials(true);
